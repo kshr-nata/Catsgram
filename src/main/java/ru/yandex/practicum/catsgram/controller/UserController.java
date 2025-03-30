@@ -59,7 +59,7 @@ public class UserController {
         }
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
-            if (newUser.getEmail()!= null && !newUser.getEmail().equals(oldUser.getEmail())
+            if (newUser.getEmail() != null && !newUser.getEmail().equals(oldUser.getEmail())
                     && emails.containsValue(newUser.getEmail())) {
                 throw new DuplicatedDataException("Этот имейл уже используется");
             }
