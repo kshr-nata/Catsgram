@@ -1,12 +1,12 @@
 package ru.yandex.practicum.catsgram.controller;
 
-import jakarta.websocket.server.PathParam;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.catsgram.dto.NewPostRequest;
+import ru.yandex.practicum.catsgram.dto.PostDto;
+import ru.yandex.practicum.catsgram.dto.UpdatePostRequest;
 import ru.yandex.practicum.catsgram.exception.NotFoundException;
 import ru.yandex.practicum.catsgram.exception.ParameterNotValidException;
-import ru.yandex.practicum.catsgram.model.Post;
 import ru.yandex.practicum.catsgram.service.PostService;
 
 import java.util.Collection;
@@ -22,7 +22,7 @@ public class PostController {
     }
 
     @GetMapping
-    public Collection<Post> findAll(@RequestParam(defaultValue = "desc") String sort, @RequestParam(defaultValue = "10") int size, @RequestParam (defaultValue = "0") int from) {
+    public Collection<PostDto> findAll(@RequestParam(defaultValue = "desc") String sort, @RequestParam(defaultValue = "10") int size, @RequestParam (defaultValue = "0") int from) {
         if (!sort.equals("desc") && !sort.equals("asc")) {
             throw new ParameterNotValidException("sort", "Получено: " + sort + " должно быть: ask или desc");
         }
@@ -37,22 +37,22 @@ public class PostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Post create(@RequestBody Post post) {
-        return postService.create(post);
+    public PostDto create(@RequestBody NewPostRequest request) {
+        return postService.create(request);
     }
 
-    @PutMapping
-    public Post update(@RequestBody Post newPost) {
-        return postService.update(newPost);
+    @PutMapping("/{postId}")
+    public PostDto update(@PathVariable("postId") long postId, @RequestBody UpdatePostRequest request) {
+        return postService.update(postId, request);
     }
 
     @GetMapping("/{postId}")
-    public Post findById(@PathVariable long postId) {
-        Optional<Post> post = postService.findPostById(postId);
-        if (post.isEmpty()) {
+    public PostDto findById(@PathVariable long postId) {
+        Optional<PostDto> dto = postService.findPostById(postId);
+        if (dto.isEmpty()) {
             throw new NotFoundException("Пост с id = " + postId + " не найден");
         } else {
-            return post.get();
+            return dto.get();
         }
     }
 }
